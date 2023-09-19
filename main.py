@@ -3,7 +3,7 @@ import json
 
 TWEETS = "10000_tweets.json"
 CLEANED_TWEETS = "10000_cleaned_tweets.json"
-DESIRED_TWEETS = "10000_desired_tweets.json"
+DESIRED_TWEETS = "10000_formatted_tweets.json"
 
 def replace_functions(match) :
     value = match.group(1) 
