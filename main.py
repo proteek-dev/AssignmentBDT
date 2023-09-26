@@ -75,7 +75,7 @@ def get_desired_tweets(clearned_tweets=CLEANED_TWEETS, desired_tweets=DESIRED_TW
                     "name": tweet["actor"]["displayName"],
                     "screen_name": tweet["actor"]["preferredUsername"],
                     "location": "Internet",
-                    "url": tweet["actor"]["links"][0]["href"],
+                    "url": tweet["link"],
                     "description": tweet["actor"]["summary"]
                 },
                 "place": {},
@@ -95,6 +95,6 @@ def get_desired_tweets(clearned_tweets=CLEANED_TWEETS, desired_tweets=DESIRED_TW
         print("Cleaned File not found.")
 
 if __name__ == "__main__":
-    get_cleaned_tweets()
+    # get_cleaned_tweets()
     get_desired_tweets()
     
