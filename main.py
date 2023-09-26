@@ -86,7 +86,7 @@ def get_desired_tweets(clearned_tweets=CLEANED_TWEETS, desired_tweets=DESIRED_TW
                 },
             })
 
-        with open(desired_tweets, "w") as file:
+        with open(desired_tweets, "w", encoding='utf-8') as file:
             json.dump(desired_data, file, indent=4)
 
         print(" 10000_cleaned_tweets.json file processed and saved as '10000_desired_tweets.json'")
@@ -95,6 +95,6 @@ def get_desired_tweets(clearned_tweets=CLEANED_TWEETS, desired_tweets=DESIRED_TW
         print("Cleaned File not found.")
 
 if __name__ == "__main__":
-    get_cleaned_tweets()
+    # get_cleaned_tweets()
     get_desired_tweets()
     
