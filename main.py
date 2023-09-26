@@ -71,7 +71,7 @@ def get_desired_tweets(clearned_tweets=CLEANED_TWEETS, desired_tweets=DESIRED_TW
                 "id_str": tweet["id"],
                 "text": tweet["text"],
                 "user": {
-                    "id": tweet["actor"]["id"],
+                    "id": int(tweet["actor"]["id"]),
                     "name": tweet["actor"]["displayName"],
                     "screen_name": tweet["actor"]["preferredUsername"],
                     "location": "Internet",
