@@ -9,7 +9,7 @@ def replace_functions(match) :
     value = match.group(1) 
     return f'"{value}"'
 
-def reomve_replace_patterns(file_name):
+def remove_replace_patterns(file_name):
     
     # Define the regex patterns for /* 1 */, /* 2 */, etc.
     pattern = r'/\* (\d+) \*/'
@@ -52,7 +52,7 @@ def get_cleaned_tweets(tweets=TWEETS, clearned_tweets=CLEANED_TWEETS):
     with open(clearned_tweets, 'w', encoding='utf-8') as output_file:
         output_file.write(text)
 
-    reomve_replace_patterns(clearned_tweets)
+    remove_replace_patterns(clearned_tweets)
 
     print(" 10000_tweets.json file processed and saved as '10000_cleaned_tweets.json'")
 
@@ -67,7 +67,7 @@ def get_desired_tweets(clearned_tweets=CLEANED_TWEETS, desired_tweets=DESIRED_TW
 
         for tweet in data:
             desired_data.append({
-                "created_at": "Thu Apr 06 15:24:15 +0000 2017",
+                "created_at": tweet["actor"]["postedTime"],
                 "id_str": tweet["id"],
                 "text": tweet["text"],
                 "user": {
