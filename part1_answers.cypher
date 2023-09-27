@@ -28,36 +28,6 @@ CALL apoc.periodic.iterate(
     )
 YIELD * ;
 
-// Link Node and CONTAINS relationship
-CALL apoc.periodic.iterate(
-    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
-    'WITH
-    value.link AS link,
-    value.id AS id
-    MATCH(t:Tweet{id:id})
-    MERGE (l:Link{link:link})
-    MERGE (t)-[:CONTAINS]->(l)',
-    {batchSize:500}
-    )
-YIELD * ;
-
-// User Node and POSTS relationship
-CALL apoc.periodic.iterate(
-    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
-    'WITH value
-    MATCH (t:Tweet{id:value.id})
-    WITH t, value
-    UNWIND value.actor AS user
-    MERGE (u:User{id:user.id})
-    ON CREATE SET
-    u.officialName = user.displayName,
-    u.twitterName = user.preferredUsername,
-    u.userLink = user.link
-    MERGE (u)-[:POSTS]->(t)',
-    {batchSize:500}
-    )
-YIELD * ;
-
 // Source Node and USING relationship
 CALL apoc.periodic.iterate(
     'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
@@ -73,6 +43,23 @@ CALL apoc.periodic.iterate(
     )
 YIELD * ;
 
+// User Node and POSTS relationship
+CALL apoc.periodic.iterate(
+    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
+    'WITH value
+    MATCH (t:Tweet{id:value.id})
+    WITH t, value
+    UNWIND value.actor AS user
+    MERGE (u:User{id:user.id})
+    ON CREATE SET
+    u.UserDisplayName = user.displayName,
+    u.twitterName = user.preferredUsername,
+    u.userLink = user.link
+    MERGE (u)-[:POSTS]->(t)',
+    {batchSize:500}
+    )
+YIELD * ;
+
 // Hashtag Node and TAGS relationship
 CALL apoc.periodic.iterate(
     'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
@@ -84,25 +71,6 @@ CALL apoc.periodic.iterate(
         tag in level1.hashtags | MERGE (h:Hashtag {hashtag:tag.text}
         )
     MERGE (t)-[:TAGS]->(h))',
-    {batchSize:500}
-    )
-YIELD * ;
-
-// Mentioned User Node and MENTIONS relationship
-CALL apoc.periodic.iterate(
-    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
-    'WITH value
-    MATCH (t:Tweet{id:value.id})
-    WITH t, value
-    UNWIND value.twitter_entities AS level1
-    FOREACH (
-        user in level1.user_mentions | 
-        MERGE (u:User {name:user.name})
-        ON CREATE SET
-        u.twitterName = user.screen_name,
-        u.id = user.id
-        MERGE (t)-[:MENTIONS]->(u)
-    )',
     {batchSize:500}
     )
 YIELD * ;
@@ -138,4 +106,38 @@ CALL apoc.periodic.iterate(
     {batchSize:500}
     )
 YIELD * ;
+
+// Link Node and CONTAINS relationship
+CALL apoc.periodic.iterate(
+    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
+    'WITH
+    value.link AS link,
+    value.id AS id
+    MATCH(t:Tweet{id:id})
+    MERGE (l:Link{link:link})
+    MERGE (t)-[:CONTAINS]->(l)',
+    {batchSize:500}
+    )
+YIELD * ;
+
+// Mentioned User Node and MENTIONS relationship
+CALL apoc.periodic.iterate(
+    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
+    'WITH value
+    MATCH (t:Tweet{id:value.id})
+    WITH t, value
+    UNWIND value.twitter_entities AS level1
+    FOREACH (
+        user in level1.user_mentions | 
+        MERGE (u:User {name:user.name})
+        ON CREATE SET
+        u.twitterName = user.screen_name,
+        u.id = user.id
+        MERGE (t)-[:MENTIONS]->(u)
+    )',
+    {batchSize:500}
+    )
+YIELD * ;
+
+
 
