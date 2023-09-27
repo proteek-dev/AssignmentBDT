@@ -67,12 +67,21 @@ def get_desired_tweets(clearned_tweets=CLEANED_TWEETS, desired_tweets=DESIRED_TW
 
         for tweet in data:
             desired_data.append({
-                "created_at": tweet["actor"]["postedTime"],
-                "id_str": tweet["id"],
+                "postedTime": tweet["actor"]["postedTime"],
+                "id": tweet["id"],
                 "text": tweet["text"],
-                "user": {
+                "retweetCount": tweet["retweetCount"],
+                "favoriteCount": tweet["favoriteCount"],
+                "verb": tweet["verb"],
+                "generator": {
+                    "displayName": tweet["generator"]["displayName"],
+                    "link": tweet["generator"]["link"]
+                },
+                "link": tweet["link"],
+                
+                "actor": {
                     "id": tweet["actor"]["id"],
-                    "name": tweet["actor"]["displayName"],
+                    "displayName": tweet["actor"]["displayName"],
                     "screen_name": tweet["actor"]["preferredUsername"],
                     "location": "Internet",
                     "url": tweet["link"],
