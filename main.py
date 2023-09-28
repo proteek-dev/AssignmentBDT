@@ -1,9 +1,9 @@
 import re
 import json
 
-TWEETS = "10000_tweets.json"
-CLEANED_TWEETS = "10000_cleaned_tweets.json"
-DESIRED_TWEETS = "10000_formatted_tweets.json"
+TWEETS = "10000 tweets 1.json"
+CLEANED_TWEETS = "cleaned_10000_tweets.json"
+DESIRED_TWEETS = "formatted_10000_tweets.json"
 
 def replace_functions(match) :
     value = match.group(1) 
@@ -67,32 +67,31 @@ def get_desired_tweets(clearned_tweets=CLEANED_TWEETS, desired_tweets=DESIRED_TW
 
         for tweet in data:
             desired_data.append({
-                "postedTime": tweet["actor"]["postedTime"],
                 "id": tweet["id"],
+                "postedTime": tweet["actor"]["postedTime"],
                 "text": tweet["text"],
+                "twitter_lang": tweet["twitter_lang"],
                 "retweetCount": tweet["retweetCount"],
-                "favoriteCount": tweet["favoriteCount"],
+                "favoritesCount": tweet["favoritesCount"],
                 "verb": tweet["verb"],
                 "generator": {
                     "displayName": tweet["generator"]["displayName"],
                     "link": tweet["generator"]["link"]
                 },
-                "link": tweet["link"],
-                
                 "actor": {
                     "id": tweet["actor"]["id"],
                     "displayName": tweet["actor"]["displayName"],
-                    "screen_name": tweet["actor"]["preferredUsername"],
-                    "location": "Internet",
+                    "preferredUsername": tweet["actor"]["preferredUsername"],
                     "url": tweet["link"],
                     "description": tweet["actor"]["summary"]
                 },
-                "place": {},
-                "entities": {
+                "link": tweet["link"],
+                "twitter_entities": {
                     "hashtags": tweet["twitter_entities"]["hashtags"],
                     "urls": tweet["twitter_entities"]["urls"],
                     "user_mentions": tweet["twitter_entities"]["user_mentions"]
                 },
+                "object": tweet["object"],
             })
 
         with open(desired_tweets, "w", encoding='utf-8') as file:
@@ -104,6 +103,6 @@ def get_desired_tweets(clearned_tweets=CLEANED_TWEETS, desired_tweets=DESIRED_TW
         print("Cleaned File not found.")
 
 if __name__ == "__main__":
-    # get_cleaned_tweets()
+    get_cleaned_tweets()
     get_desired_tweets()
     
