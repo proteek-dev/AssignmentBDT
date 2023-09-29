@@ -24,7 +24,8 @@ MATCH (u)-[:POSTS]->(t:Tweet)-[:TAGS]->(h:Hashtag)
 WITH u, popularTweets, h, count(h) AS hashtagCount
 ORDER BY hashtagCount DESC
 LIMIT 2
-RETURN u.UserDisplayName AS User, popularTweets AS PopularTweets, collect(h.hashtag) AS TopHashtags
+RETURN u.UserDisplayName AS User, popularTweets AS PopularTweets, 
+collect(h.hashtag) AS TopHashtags
 
 // Answer 3
 // The shortest path connecting the User ‘luckyinsivan’ and
@@ -33,13 +34,15 @@ RETURN u.UserDisplayName AS User, popularTweets AS PopularTweets, collect(h.hash
 // view and the length of this path 
 
 // Getting Graph in Neo4j Browser
-MATCH (u1:User{twitterName:"luckyinsivan"}), (h:Hashtag{hashtag:"imsosick"})
+MATCH (u1:User{twitterName:"luckyinsivan"}),
+(h:Hashtag{hashtag:"imsosick"})
 MATCH p = shortestPath((u1)-[*]-(h))
 WHERE ALL (r IN relationships(p) WHERE type(r) <> "USING")
 RETURN p, length(p)
 
 // Getting Example result row: path_length 13
-MATCH (u1:User{twitterName:"luckyinsivan"}), (h:Hashtag{hashtag:"imsosick"})
+MATCH (u1:User{twitterName:"luckyinsivan"}),
+(h:Hashtag{hashtag:"imsosick"})
 MATCH p = shortestPath((u1)-[*]-(h))
 WHERE ALL (r IN relationships(p) WHERE type(r) <> "USING")
 RETURN length(p) AS path_length

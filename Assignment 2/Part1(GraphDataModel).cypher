@@ -1,6 +1,6 @@
 //Tweet Node
 CALL apoc.periodic.iterate(
-    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
+    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/Big_Data_Technologies/main/Assignment%202/formatted_10000_tweets.json") YIELD value',
     'WITH value.id AS id,
     datetime({ 
         epochMillis: apoc.date.parse( 
@@ -30,14 +30,15 @@ YIELD * ;
 
 // Source Node and USING relationship
 CALL apoc.periodic.iterate(
-    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
+    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/Big_Data_Technologies/main/Assignment%202/formatted_10000_tweets.json") YIELD value',
     'WITH value
     MATCH (t:Tweet{id:value.id})
     WITH t, value
     UNWIND value.generator AS source
     MERGE (s:Source {sourceName:source.displayName})
     ON CREATE SET
-    s.sourceLink = source.link
+    s.sourceLink = source.link,
+    s.sourceDisplayName = source.displayName
     MERGE (t)-[:USING]->(s)',
     {batchSize:500}
     )
@@ -45,7 +46,7 @@ YIELD * ;
 
 // User Node and POSTS relationship
 CALL apoc.periodic.iterate(
-    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
+    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/Big_Data_Technologies/main/Assignment%202/formatted_10000_tweets.json") YIELD value',
     'WITH value
     MATCH (t:Tweet{id:value.id})
     WITH t, value
@@ -54,7 +55,7 @@ CALL apoc.periodic.iterate(
     ON CREATE SET
     u.UserDisplayName = user.displayName,
     u.twitterName = user.preferredUsername,
-    u.userLink = user.link
+    u.userLink = user.url
     MERGE (u)-[:POSTS]->(t)',
     {batchSize:500}
     )
@@ -62,7 +63,7 @@ YIELD * ;
 
 // Hashtag Node and TAGS relationship
 CALL apoc.periodic.iterate(
-    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
+    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/Big_Data_Technologies/main/Assignment%202/formatted_10000_tweets.json") YIELD value',
     'WITH value
     MATCH (t:Tweet{id:value.id})
     WITH t, value
@@ -77,7 +78,7 @@ YIELD * ;
 
 // Retweet Node and RETWEET and TAGS relationship
 CALL apoc.periodic.iterate(
-    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
+    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/Big_Data_Technologies/main/Assignment%202/formatted_10000_tweets.json") YIELD value',
     'WITH value
     MATCH (t:Tweet{id:value.id})
     WHERE t.retweetStatus = "share"
@@ -109,20 +110,25 @@ YIELD * ;
 
 // Link Node and CONTAINS relationship
 CALL apoc.periodic.iterate(
-    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
-    'WITH
-    value.link AS link,
-    value.id AS id
-    MATCH(t:Tweet{id:id})
-    MERGE (l:Link{link:link})
-    MERGE (t)-[:CONTAINS]->(l)',
+    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/Big_Data_Technologies/main/Assignment%202/formatted_10000_tweets.json") YIELD value',
+    'WITH value
+    MATCH (t:Tweet{id:value.id})
+    UNWIND value.twitter_entities AS level1
+    FOREACH(
+        userurl in level1.urls |
+        MERGE (l:Link{link:userurl.url})
+        ON CREATE SET
+        l.expandedUrl = userurl.expanded_url,
+        l.displayUrl = userurl.display_url
+        MERGE (t)-[:CONTAINS]->(l)
+    )',
     {batchSize:500}
     )
 YIELD * ;
 
 // Mentioned User Node and MENTIONS relationship
 CALL apoc.periodic.iterate(
-    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/AssignmentBDT/main/tweets_clean.json") YIELD value',
+    'CALL apoc.load.json("https://raw.githubusercontent.com/proteek-dev/Big_Data_Technologies/main/Assignment%202/formatted_10000_tweets.json") YIELD value',
     'WITH value
     MATCH (t:Tweet{id:value.id})
     WITH t, value
