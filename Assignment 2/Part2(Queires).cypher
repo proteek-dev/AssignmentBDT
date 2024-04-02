@@ -46,3 +46,30 @@ MATCH (u1:User{twitterName:"luckyinsivan"}),
 MATCH p = shortestPath((u1)-[*]-(h))
 WHERE ALL (r IN relationships(p) WHERE type(r) <> "USING")
 RETURN length(p) AS path_length
+
+// Construct a Cypher query to pinpoint the top 5 users frequently mentioned throughout the tweets. Your results should show both the username and their respective mention counts.
+
+MATCH (u:User)<-[:MENTIONS]-(t:Tweet)
+WITH u, count(t) AS mentions
+RETURN u.username AS User, mentions AS Mentions
+ORDER BY mentions DESC
+LIMIT 5
+
+// Investigate the relationships among trending hashtags. Design a Cypher query to determine which hashtag pairs commonly coexist within a single tweet. Highlight the top 5 such pairs
+// based on their co-occurrence frequency.
+
+MATCH (h1:Hashtag)<-[:TAGS]-(tweet:Tweet)-[:TAGS]->(h2:Hashtag)
+WHERE h1 <> h2
+WITH h1, h2, COUNT(*) AS coOccurrenceCount
+RETURN h1.tag AS Hashtag1, h2.tag AS Hashtag2, coOccurrenceCount
+ORDER BY coOccurrenceCount DESC
+LIMIT 5
+
+// Given a scenario where tweets have undergone sentiment analysis and are labelled as positive, negative, or neutral, 
+// devise a Cypher query to explore user relationships derived from tweet sentiments. 
+// Identify users who predominantly retweet or share tweets with a positive sentiment.
+
+MATCH (u1:User)-[:RETWEETED]->(t:Tweet)
+WHERE t.sentiment = "positive"
+RETURN u1.username AS retweeter_or_sharer, COUNT(*) AS positive_tweet_count
+ORDER BY positive_tweet_count DESC
